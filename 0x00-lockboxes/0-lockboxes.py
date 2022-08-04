@@ -7,9 +7,8 @@ def canUnlockAll(boxes):
     new_list = [0]
     for key in new_list:
         for box in boxes[key]:
-            if box not in new_list and box < len(boxes):
+            if box < len(boxes) and box not in new_list:
                 new_list.append(box)
-
     if len(new_list) == len(boxes):
         return True
     return False
