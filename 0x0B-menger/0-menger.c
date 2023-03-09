@@ -1,41 +1,38 @@
 #include "menger.h"
 
 /**
- * One - Checks if indices are (1, 1), if so, then square is blank
- * @i: Row Index
- * @j: Column Index
- * Return: 1 if (1, 1), 0 otherwise
- */
-int One(int i, int j)
-{
-	while (i != 0 && j != 0)
-	{
-		if (i % 3 == 1 && j % 3 == 1)
-			return (0);
-
-		i /= 3, j /= 3;
-	}
-	return (1);
-}
-
-/**
- * menger - Entry point
- * @level: level of the Menger Sponge to draw
- * Return: Nothing
+ * menger - draws a 2D menger sponge
+ * @level: number of levels to draw
+ * Return: nothing
  */
 void menger(int level)
 {
-	int i, j, limit;
+	int col, row, size;
 
 	if (level < 0)
 		return;
-
-	for (i = 0, limit = pow(3, level); i < limit; i++)
+	size = pow(3, level);
+	for (col = 0; col < size; col++)
 	{
-		for (j = 0; j < limit; j++)
-		{
-			One(i, j) == 1 ? printf("%c", '#') : printf("%c", ' ');
-		}
-		printf("\n");
+		for (row = 0; row < size; row++)
+			printf("%c", hash_space(col, row));
+		putchar(10);
 	}
+}
+
+/**
+ * hash_space - gets a character
+ * @col: column
+ * @row: row
+ * Return: '#' or ' '
+ */
+char hash_space(int col, int row)
+{
+	while (col && row)
+	{
+		if (col % 3 == 1 && row % 3 == 1)
+			return (' ');
+		col /= 3, row /= 3;
+	}
+	return ('#');
 }
