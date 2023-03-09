@@ -1,4 +1,6 @@
 #include "menger.h"
+#include <stdlib.h>
+
 /**
  * main - Entry point
  *
