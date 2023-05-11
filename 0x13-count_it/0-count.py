@@ -2,56 +2,35 @@
 """
 Recursive function that queries the Reddit API
 """
-from requests import request
+import requests
 
 
-def generate_dicts(word_list):
-    """Generates the two dictionaries
-
-    Args:
-        word_list ([List]): list of words about subreddit
+def count_words(subreddit, word_list, after=None, my_dict={}):
     """
-    count = {k: 0 for k in word_list}
-    dup = {}
-    for k in word_list:
-        if k not in dup:
-            dup[k] = 0
-        dup[k] += 1
-    return (count, dup)
-
-
-def count_words(subreddit, word_list, after="", count={}, dup={}, init=0):
+    Gets the top ten hot post of a subreddit
     """
-    Returns a list containing the titles of all hot articles for a
-    given subreddit. If no results are found for the given subreddit,
-    the function should return None.
-    """
-    if not init:
-        count, dup = generate_dicts(word_list)
-
-    url = "https://api.reddit.com/r/{}/hot?after={}".format(subreddit, after)
-    headers = {"User-Agent": "Python3"}
-    response = request("GET", url, headers=headers).json()
-    try:
-        data = response.get('data')
-        top = data.get('children')
-        _after = data.get('after')
-
-        for item in top:
-            data = item.get('data')['title']
-            for word in count:
-                amount = data.lower().split(' ').count(word.lower())
-                count[word] += amount
-
-        if _after:
-            count_words(subreddit, word_list, _after, count, dup, 1)
-        else:
-            sort_abc = sorted(count.items(), key=lambda tup: tup[::-1])
-            desc = sorted(sort_abc, key=lambda tup: tup[1], reverse=True)
-
-            for name, cnt in desc:
-                cnt *= dup[name]
-                if cnt:
-                    print('{}: {}'.format(name.lower(), cnt))
-    except Exception:
-        return None
+    url = 'https://www.reddit.com/r/{}/hot.json'.format(subreddit)
+    payload = {'after': after}
+    response = requests.get(url,
+                            allow_redirects=False,
+                            params=payload,
+                            headers={'User-Agent': 'Pear'})
+    if response and response.status_code == 200:
+        post_list = response.json().get('data').get('children')
+        for children in post_list:
+            title1 = children.get('data').get('title')
+            for word in word_list:
+                try:
+                    my_dict[word] += title1.lower().split().count(word.lower())
+                except KeyError:
+                    my_dict[word] = title1.lower().split().count(word.lower())
+        after = response.json().get('data').get('after')
+        if (after is None):
+            for key, val in sorted(my_dict.items(),
+                                   key=lambda x: (-1*x[1], -1*x[0])):
+                if (val != 0):
+                    print("{}: {}".format(key.lower(), val))
+            return
+        return count_words(subreddit, word_list, after, my_dict)
+    else:
+        return
