@@ -1,23 +1,36 @@
 #!/usr/bin/python3
-"""determine the fewest number of coins needed"""
+"""
+Change comes from within
+Dynamic programming
+Time Complexity O(n * m)
+Space complexity O(total)
+"""
 
 
-def makeChange(coins, total):
+def makeChange(coins: list, total: int) -> int:
+    """
+    Given a pile of coins of different values, determine the fewest
+    number of coins needed to meet a given amount total.
+
+    Args:
+        coins (list): Is a list of the values of the coins in
+                      your possession
+        total (int):  Total number to reach
+
+    Returns:
+        int: Fewest number of coins needed to meet total
+    """
     if total <= 0:
         return 0
+    dp = [float('inf')] * (total + 1)
+    dp[0] = 0
+    for coin in coins:
+        for i in range(coin, total + 1):
+            dp[i] = min(dp[i], dp[i - coin] + 1)
+    return dp[total] if dp[total] != float('inf') else -1
 
-    if (coins is None or len(coins) == 0):
-        return -1
 
-    change = 0
-    my_coins = sorted(coins, reverse=True)
-    money_left = total
-
-    for coin in my_coins:
-        while (money_left % coin >= 0 and money_left >= coin):
-            change += int(money_left / coin)
-            money_left = money_left % coin
-
-    change = change if money_left == 0 else -1
-
-    return change
+if __name__ == "__main__":
+    coins = [507, 500, 300, 200, 6, 5, 4, 3]
+    total = 1413
+    print(makeChange(coins, total))
