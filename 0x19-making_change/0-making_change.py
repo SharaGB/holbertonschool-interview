@@ -1,25 +1,23 @@
 #!/usr/bin/python3
-""" makechange challenge """
+"""determine the fewest number of coins needed"""
 
 
 def makeChange(coins, total):
-    """
-    mkechange challenge
-    """
-
     if total <= 0:
         return 0
 
-    coins.sort(reverse=True)
-    sum = 0
-    i = 0
-    counter = 0
-    num_coins = len(coins)
-    while sum < total and i < num_coins:
-        while coins[i] <= total - sum:
-            sum += coins[i]
-            counter += 1
-            if sum == total:
-                return counter
-        i += 1
-    return -1
+    if (coins is None or len(coins) == 0):
+        return -1
+
+    change = 0
+    my_coins = sorted(coins, reverse=True)
+    money_left = total
+
+    for coin in my_coins:
+        while (money_left % coin >= 0 and money_left >= coin):
+            change += int(money_left / coin)
+            money_left = money_left % coin
+
+    change = change if money_left == 0 else -1
+
+    return change
