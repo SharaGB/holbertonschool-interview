@@ -11,7 +11,7 @@ def makeChange(coins, total):
     if total == 0:
         return 0
     if total < 0 or len(coins) == 0:
-        return - 1
+        return -1
     if len(coins) == 1 and total in coins:
         return 1
 
@@ -21,4 +21,4 @@ def makeChange(coins, total):
         for amount in range(len(nums)):
             if denom <= amount:
                 nums[amount] = min(nums[amount], 1 + nums[amount - denom])
-    return nums[total] if nums[total] != float('inf') else - 1
+    return nums[total] if nums[total] != float('inf') else -1
